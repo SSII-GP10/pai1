@@ -1,8 +1,13 @@
 package view;
 
+import domain.Hash;
 import persistence.DBConnection;
+import persistence.HashRepository;
 
 public class Main {
+	private static Hash other = new Hash(1,"src/main/hash1.bin","asd5fs5df5sdf5");
+	private static Hash changed = new Hash(2,"n1","65465464");
+	private static Hash unchanged = new Hash(2,"n1","654654564");
 	public static void main(String[] args){
 		//Testing DB connection
 		DBConnection.createDB();
