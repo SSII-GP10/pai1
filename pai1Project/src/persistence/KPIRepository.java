@@ -6,8 +6,11 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.stream.Collectors;
 
 import domain.KPI;
 
@@ -105,6 +108,29 @@ public class KPIRepository {
 	public static Collection<KPI> getAllKPI(){
 		String sql = "SELECT * FROM KPI;";
 		return runQuery(sql);
+	}
+	/**
+	 * 
+	 * @return A collection of the KPI that has a ReportDate of the same month that current month
+	 */
+	
+	public static Collection<KPI> getKPIOfCurrentMonth(){
+		
+		Collection<KPI> result = getAllKPI();
+		Calendar now = new GregorianCalendar();
+		now.setTime(new Date(System.currentTimeMillis()));
+		
+		int month = now.get(Calendar.MONTH);
+		result = result.stream()
+						.filter(x ->{
+							Calendar cal= new GregorianCalendar();
+							cal.setTime(x.getReportDate());
+							int xmonth =cal.get(GregorianCalendar.MONTH);
+							return xmonth == month;
+								})
+						.collect(Collectors.toList());
+		System.out.println(result);
+		return result;
 	}
 	
 	/**

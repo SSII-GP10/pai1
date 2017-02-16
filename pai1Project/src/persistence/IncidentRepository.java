@@ -6,8 +6,11 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.stream.Collectors;
 
 import domain.Incident;
 
@@ -104,6 +107,29 @@ public class IncidentRepository {
 		String sql = "SELECT * FROM INCIDENT;";
 		return runQuery(sql);
 	}
+	
+	/**
+	 * 
+	 * @return A collection of the Incident whose Date is of the same month that current month
+	 */
+	public static Collection<Incident> getKPIOfCurrentMonth(){
+			
+			Collection<Incident> result = getAllIncidents();
+			Calendar now = new GregorianCalendar();
+			now.setTime(new Date(System.currentTimeMillis()));
+			
+			int month = now.get(Calendar.MONTH);
+			result = result.stream()
+							.filter(x ->{
+								Calendar cal= new GregorianCalendar();
+								cal.setTime(x.getDate());
+								int xmonth =cal.get(GregorianCalendar.MONTH);
+								return xmonth == month;
+									})
+							.collect(Collectors.toList());
+			System.out.println(result);
+			return result;
+		}
 	
 	/**
 	 * 

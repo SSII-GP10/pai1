@@ -35,7 +35,7 @@ public class Main {
 		List<KPI> res = KPIRepository.getKPI(755).stream().collect(Collectors.toList());
 		System.out.println(res.get(0).getReportDate());
 		System.out.println(KPIRepository.getAllKPI());
-		
+		KPIRepository.getKPIOfCurrentMonth().stream().forEach(x->System.out.println(x.getId()));		
 	}
 
 	private static void testIncidents() {
