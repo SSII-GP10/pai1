@@ -4,13 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import domain.Hash;
 import domain.KPI;
 
 
@@ -35,7 +33,7 @@ public class KPIRepository {
 			
 			"Negatives NUMERIC NOT NULL,"
 			+"Positives NUMERIC NOT NULL,"+
-			"ReportDate TIMESTAMP NOT NULL"
+			"ReportDate TEXT NOT NULL"
 			+ ")";
 			st.executeUpdate(query);
 			st.close();
@@ -55,10 +53,11 @@ public class KPIRepository {
 		insertKPI(kpi.getId(), kpi.getRatio(), kpi.getPositives(),kpi.getNegatives());
 	}
 	/**
-	 * Insert a kpi into de DB
+	 * Insert a kpi into de DB with current date
 	 * @param id :  the given id for the kpi
 	 * @param ratio : ratio double of the kpi
-	 * @param name : name in terms of path to the file of the hash
+	 * @param positives : Number of files that were unchanged
+	 * @param negatives : Number of files that were changed
 	 * @throws IllegalArgumentException
 	 */
 	public static void insertKPI(Integer id,Double ratio, Integer positives, Integer negatives) throws IllegalArgumentException{
@@ -66,13 +65,14 @@ public class KPIRepository {
 		Connection c = null;
 		Statement st = null;
 		Date now = new Date(System.currentTimeMillis());
+		String formatted =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(now);
 			try {
 				Class.forName("org.sqlite.JDBC");
 				c = DriverManager.getConnection(DBConnection.PATH);
 				c.setAutoCommit(false);
 				st = c.createStatement();
 				String sql = "INSERT INTO KPI (ID,Ratio,Negatives,Positives,ReportDate)"+
-				"VALUES ("+id.toString()+",'"+ratio+"','"+negatives+"','"+positives+"','"+now.toString()+"');";
+				"VALUES ("+id.toString()+",'"+ratio+"','"+negatives+"','"+positives+"','"+formatted+"');";
 				
 				st.executeUpdate(sql);
 				st.close();
@@ -83,42 +83,42 @@ public class KPIRepository {
 				 System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			     System.exit(0);
 			}
-			System.out.println("Hash Inserted: "+hash);
+			System.out.println("KPI Inserted");
 	
 	} 
 	
 	/**
 	 * 
-	 * @param name: the name of the hash 
-	 * @return give a collecition with all the hashes that matches the given name, if the name is a path to 
-	 * the file, there should be only 0...1 element.
+	 * @param id: the id of the kpi 
+	 * @return give a collection with all the kpis that matches the given id there should be only 0...1 element.
 	 */
 	
-	public static Collection<Hash> getHash(String name){ 
-		String sql = "SELECT * FROM HASHES WHERE Name = '"+name+"';";
+	public static Collection<KPI> getKPI(Integer id){ 
+		String sql = "SELECT * FROM KPI WHERE ID = '"+id+"';";
 		return runQuery(sql);
 	}
 	
 	/**
 	 * 
-	 * @return retrieves a collection with all the hashes of the system
+	 * @return retrieves a collection with all the kpis of the system
 	 */
-	public static Collection<Hash> getAllHashes(){
-		String sql = "SELECT * FROM HASHES;";
+	public static Collection<KPI> getAllKPI(){
+		String sql = "SELECT * FROM KPI;";
 		return runQuery(sql);
 	}
 	
 	/**
 	 * 
-	 * @param sql, SQL query to execute OVER THE TABLE HASHES
-	 * @return a collection of the hashes once the given query has been run
+	 * @param sql, SQL query to execute OVER THE TABLE KPI
+	 * @return a collection of the kpis once the given query has been run
 	 */
-	public static Collection<Hash> runQuery(String sql){
+	public static Collection<KPI> runQuery(String sql){
 		DBConnection.checkPath();
 		Connection c = null;
 		Statement st = null;
 		ResultSet res = null;
-		Collection<Hash> result = new ArrayList<Hash>();
+		Collection<KPI> result = new ArrayList<KPI>();
+		SimpleDateFormat formatted =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		try {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection(DBConnection.PATH);
@@ -128,10 +128,12 @@ public class KPIRepository {
 			
 			while(res.next()){
 			Integer id = res.getInt("ID");
-			String Hname = res.getString("Name");
-			String hash = res.getString("Hash");
-			Hash newHash = new Hash(id,Hname,hash);
-			result.add(newHash);
+			Double ratio = res.getDouble("Ratio");
+			Integer positives = res.getInt("Positives");
+			Integer negatives = res.getInt("Negatives");
+			Date date = formatted.parse(res.getString("ReportDate"));
+			KPI newkpi = new KPI(id,ratio,positives,negatives,date);
+			result.add(newkpi);
 		}
 			res.close();
 			st.close();
@@ -143,18 +145,4 @@ public class KPIRepository {
 		return result;
 	}
 	
-	/**
-	 * 
-	 * @param hash
-	 * @return true if the given Hash has the same hash that it had in db
-	 */
-	public static Boolean unchangedHash(Hash hash){
-		Boolean res = false;
-		Collection<Hash> col = getHash(hash.getName());
-		List<Hash> result= col.stream().filter(x -> hash.getHash().equals(x.getHash()))
-		.collect(Collectors.toList());
-		if(!result.isEmpty())
-			res = true;
-		return res;
-	}
 }
