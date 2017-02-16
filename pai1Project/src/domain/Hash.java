@@ -1,4 +1,4 @@
-package pai1Project;
+package domain;
 
 public class Hash {
 	

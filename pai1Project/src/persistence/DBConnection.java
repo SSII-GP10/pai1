@@ -1,4 +1,4 @@
-package pai1Project;
+package persistence;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import domain.Hash;
+
 public class DBConnection {
 	public static String PATH= null;
 	
