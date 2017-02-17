@@ -1,47 +1,40 @@
 package persistence;
 
-
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class DBConnection {
-	public static String PATH= null;
+	public static String PATH;
 	
-	public static void setPath(String path){
-		PATH = path;
+	public DBConnection(){
+		PATH = null;
 	}
+	
 	/**
 	 * Create Database if doesn't exists;
+	 * @throws ClassNotFoundException 
+	 * @throws SQLException 
 	 */
-	@SuppressWarnings("unused")
-	public static void createDB(){
-		Connection c = null;
-		String path = PATH==null?"jdbc:sqlite:hid.db":PATH;
-		setPath(path);
-	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection(path);
-	      
-	      //Create the tables
-	      HashRepository.createHashesTable();
-	      KPIRepository.createKPITable();
-	      IncidentRepository.createIncidentTable();
-	    } catch ( Exception e ) {
-	      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-	      System.exit(0);
-	    }
-	    System.out.println("Opened database successfully");
-
+	public static void createDB() throws SQLException{
+		if(PATH == null){
+			PATH = "jdbc:sqlite:hid.db";
+			try {
+				Class.forName("org.sqlite.JDBC");
+				Connection c = DriverManager.getConnection(PATH);
+				HashRepository.createHashesTable();
+				//KPIRepository.createKPITable();
+				//IncidentRepository.createIncidentTable();
+			} catch (ClassNotFoundException | SQLException e) {
+				throw new SQLException("Error: Cant connect to DB.");
+			}
+		}
 	}
 	
-	
-	public static void checkPath() {
-		String path = PATH==null?"jdbc:sqlite:hid.db":PATH;
-		setPath(path);
+	public static void checkPath() throws SQLException {
 		if(PATH == null){
-			throw new IllegalArgumentException("La base de datos no ha sido creada");
+			throw new SQLException("Error: The DB not exist.");
 		}
-		
 	}
 	
 }

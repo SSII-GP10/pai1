@@ -1,0 +1,5 @@
+files = ./algo.txt; ./otro.txt
+algorithm = SHA1
+timeCheck = 43
+incidentPath = ./
+kpiPath = aaaaaa

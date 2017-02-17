@@ -3,6 +3,7 @@ package persistence;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,144 +12,90 @@ import java.util.stream.Collectors;
 
 import domain.Hash;
 
-
-
 public class HashRepository {
-	/**
-	 * Creates the database table HASHES
-	 * @throws IllegalArgumentException
-	 */
-	public static void createHashesTable() throws IllegalArgumentException{
-		DBConnection.checkPath();
-		Statement st =null;
-		Connection c= null;
-		try {	
+	public static void createHashesTable() throws SQLException {
+		try {
+			DBConnection.checkPath();
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection(DBConnection.PATH);
-			
-			st = c.createStatement();
+			Connection con = DriverManager.getConnection(DBConnection.PATH);
+			Statement stm = con.createStatement();
 			String drop = "DROP TABLE IF EXISTS HASHES;";
-			st.executeUpdate(drop);
-			String query = "CREATE TABLE IF NOT EXISTS HASHES"+
-			"(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"+
-			"Hash TEXT NOT NULL,"+
-			"Name TEXT NOT NULL)";
-			st.executeUpdate(query);
-
-			st.close();
-		} catch (Exception e) {
-			 System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-		     System.exit(0);
+			stm.executeUpdate(drop);
+			String query = "CREATE TABLE IF NOT EXISTS HASHES"
+					+ "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+					+ "Hash TEXT NOT NULL," + "Name TEXT NOT NULL)";
+			stm.executeUpdate(query);
+			stm.close();
+		} catch (SQLException | ClassNotFoundException e) {
+			throw new SQLException(e.getMessage());
 		}
-		System.out.println("tabla creada correctamente");
 	}
-	
-	/**
-	 * Insert a hash into de DB
-	 * @param hash: Hash type we want to save.
-	 * @throws IllegalArgumentException
-	 */
-	public static void insertHash(Hash hash) throws IllegalArgumentException{
+
+	public static void insertHash(Hash hash) throws SQLException {
 		insertHash(hash.getHash(), hash.getName());
 	}
-	/**
-	 * Insert a hash into de DB
-	 * @param id :  the given id for the hash
-	 * @param hash : hash string of the hash
-	 * @param name : name in terms of path to the file of the hash
-	 * @throws IllegalArgumentException
-	 */
-	public static void insertHash(String hash, String name) throws IllegalArgumentException{
-		DBConnection.checkPath();
-		Connection c = null;
-		Statement st = null;
-			try {
-				Class.forName("org.sqlite.JDBC");
-				c = DriverManager.getConnection(DBConnection.PATH);
-				c.setAutoCommit(false);
-				st = c.createStatement();
-				String sql = "INSERT INTO HASHES (Hash,Name)"+
-				"VALUES ('"+hash+"','"+name+"');";
-				st.executeUpdate(sql);
-				st.close();
-				c.commit();
-				c.close();
-				
-			} catch (Exception e) {
-				 System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-			     System.exit(0);
-			}
-			System.out.println("Hash Inserted: "+hash);
-	
-	} 
-	
-	/**
-	 * 
-	 * @param name: the name of the hash 
-	 * @return give a collecition with all the hashes that matches the given name, if the name is a path to 
-	 * the file, there should be only 0...1 element.
-	 */
-	
-	public static Collection<Hash> getHash(String name){ 
-		String sql = "SELECT * FROM HASHES WHERE Name = '"+name+"';";
+
+	public static void insertHash(String hash, String name) throws SQLException {
+		try {
+			DBConnection.checkPath();
+			Class.forName("org.sqlite.JDBC");
+			Connection con = DriverManager.getConnection(DBConnection.PATH);
+			con.setAutoCommit(false);
+			Statement stm = con.createStatement();
+			String sql = "INSERT INTO HASHES (Hash,Name)" + "VALUES ('" + hash
+					+ "','" + name + "');";
+			stm.executeUpdate(sql);
+			stm.close();
+			con.commit();
+			con.close();
+		} catch (SQLException | ClassNotFoundException e) {
+			throw new SQLException(e.getMessage());
+		}
+
+	}
+
+	public static Collection<Hash> getHash(String name) throws SQLException {
+		String sql = "SELECT * FROM HASHES WHERE Name = '" + name + "';";
 		return runQuery(sql);
 	}
-	
-	/**
-	 * 
-	 * @return retrieves a collection with all the hashes of the system
-	 */
-	public static Collection<Hash> getAllHashes(){
+
+	public static Collection<Hash> getAllHashes() throws SQLException {
 		String sql = "SELECT * FROM HASHES;";
 		return runQuery(sql);
 	}
-	
-	/**
-	 * 
-	 * @param sql, SQL query to execute OVER THE TABLE HASHES
-	 * @return a collection of the hashes once the given query has been run
-	 */
-	public static Collection<Hash> runQuery(String sql){
-		DBConnection.checkPath();
-		Connection c = null;
-		Statement st = null;
-		ResultSet res = null;
-		Collection<Hash> result = new ArrayList<Hash>();
+
+	public static Collection<Hash> runQuery(String sql) throws SQLException {
 		try {
+			DBConnection.checkPath();
+			Collection<Hash> result = new ArrayList<Hash>();
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection(DBConnection.PATH);
-			c.setAutoCommit(false);
-			st = c.createStatement();
-			res = st.executeQuery(sql);
-			
-			while(res.next()){
-			Integer id = res.getInt("ID");
-			String Hname = res.getString("Name");
-			String hash = res.getString("Hash");
-			Hash newHash = new Hash(id,Hname,hash);
-			result.add(newHash);
-		}
+			Connection con = DriverManager.getConnection(DBConnection.PATH);
+			con.setAutoCommit(false);
+			Statement stm = con.createStatement();
+			ResultSet res = stm.executeQuery(sql);
+			while (res.next()) {
+				Integer id = res.getInt("ID");
+				String Hname = res.getString("Name");
+				String hash = res.getString("Hash");
+				Hash newHash = new Hash(id, Hname, hash);
+				result.add(newHash);
+			}
 			res.close();
-			st.close();
-			c.close();
-		} catch (Exception e) {
-			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-		     System.exit(0);
+			stm.close();
+			con.close();
+			return result;
+		} catch (SQLException | ClassNotFoundException e) {
+			throw new SQLException(e.getMessage());
 		}
-		return result;
 	}
-	
-	/**
-	 * 
-	 * @param hash
-	 * @return true if the given Hash has the same hash that it had in db
-	 */
-	public static Boolean unchangedHash(Hash hash){
+
+	public static Boolean unchangedHash(Hash hash) throws SQLException {
 		Boolean res = false;
 		Collection<Hash> col = getHash(hash.getName());
-		List<Hash> result= col.stream().filter(x -> hash.getHash().equals(x.getHash()))
-		.collect(Collectors.toList());
-		if(!result.isEmpty())
+		List<Hash> result = col.stream()
+				.filter(x -> hash.getHash().equals(x.getHash()))
+				.collect(Collectors.toList());
+		if (!result.isEmpty())
 			res = true;
 		return res;
 	}
