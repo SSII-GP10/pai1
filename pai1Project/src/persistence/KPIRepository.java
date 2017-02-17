@@ -33,7 +33,7 @@ public class KPIRepository {
 			String drop = "DROP TABLE IF EXISTS KPI;";
 			st.executeUpdate(drop);
 			String query = "CREATE TABLE IF NOT EXISTS KPI"+
-			"(ID INT PRIMARY KEY NOT NULL,"+
+			"(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"+
 			"Ratio DECIMAL NOT NULL,"+
 			
 			"Negatives NUMERIC NOT NULL,"
@@ -55,7 +55,7 @@ public class KPIRepository {
 	 * @throws IllegalArgumentException
 	 */
 	public static void insertKPI(KPI kpi) throws IllegalArgumentException{
-		insertKPI(kpi.getId(), kpi.getRatio(), kpi.getPositives(),kpi.getNegatives());
+		insertKPI(kpi.getRatio(), kpi.getPositives(),kpi.getNegatives());
 	}
 	/**
 	 * Insert a kpi into de DB with current date
@@ -65,7 +65,7 @@ public class KPIRepository {
 	 * @param negatives : Number of files that were changed
 	 * @throws IllegalArgumentException
 	 */
-	public static void insertKPI(Integer id,Double ratio, Integer positives, Integer negatives) throws IllegalArgumentException{
+	public static void insertKPI(Double ratio, Integer positives, Integer negatives) throws IllegalArgumentException{
 		DBConnection.checkPath();
 		Connection c = null;
 		Statement st = null;
@@ -76,8 +76,8 @@ public class KPIRepository {
 				c = DriverManager.getConnection(DBConnection.PATH);
 				c.setAutoCommit(false);
 				st = c.createStatement();
-				String sql = "INSERT INTO KPI (ID,Ratio,Negatives,Positives,ReportDate)"+
-				"VALUES ("+id.toString()+",'"+ratio+"','"+negatives+"','"+positives+"','"+formatted+"');";
+				String sql = "INSERT INTO KPI (Ratio,Negatives,Positives,ReportDate)"+
+				"VALUES ('"+ratio+"','"+negatives+"','"+positives+"','"+formatted+"');";
 				
 				st.executeUpdate(sql);
 				st.close();

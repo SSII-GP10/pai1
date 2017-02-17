@@ -8,5 +8,6 @@ public class Main {
 		Test.testHashes();
 		Test.testKPIS();
 		Test.testIncidents();
+		Test.testCallingMethod();
 	}
 }

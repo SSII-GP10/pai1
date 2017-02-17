@@ -33,7 +33,7 @@ public class IncidentRepository {
 			String drop = "DROP TABLE IF EXISTS INCIDENT;";
 			st.executeUpdate(drop);
 			String query = "CREATE TABLE IF NOT EXISTS INCIDENT"+
-			"(ID INT PRIMARY KEY NOT NULL,"+
+			"(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"+
 			"Message TEXT NOT NULL,"+
 			"Date TEXT NOT NULL,"+
 			"FileId INT NOT NULL,"+
@@ -54,7 +54,7 @@ public class IncidentRepository {
 	 * @throws IllegalArgumentException
 	 */
 	public static void insertIncident(Incident incident) throws IllegalArgumentException{
-		insertIncident(incident.getId(), incident.getMessage(), incident.getDate(),incident.getFileId());
+		insertIncident(incident.getMessage(), incident.getDate(),incident.getFileId());
 	}
 	/**
 	 * Insert an incident into de DB
@@ -64,7 +64,7 @@ public class IncidentRepository {
 	 * @param fileId : id of the Hash type that the incident references.
 	 * @throws IllegalArgumentException
 	 */
-	public static void insertIncident(Integer id,String message, Date date, Integer fileId) throws IllegalArgumentException{
+	public static void insertIncident(String message, Date date, Integer fileId) throws IllegalArgumentException{
 		DBConnection.checkPath();
 		Connection c = null;
 		Statement st = null;
@@ -74,8 +74,8 @@ public class IncidentRepository {
 				c = DriverManager.getConnection(DBConnection.PATH);
 				c.setAutoCommit(false);
 				st = c.createStatement();
-				String sql = "INSERT INTO INCIDENT (ID,Message,Date,FileId)"+
-				"VALUES ("+id.toString()+",'"+message+"','"+formatted+"','"+fileId+"');";
+				String sql = "INSERT INTO INCIDENT (Message,Date,FileId)"+
+				"VALUES ('"+message+"','"+formatted+"','"+fileId+"');";
 				
 				st.executeUpdate(sql);
 				st.close();
