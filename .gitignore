@@ -2,3 +2,7 @@
 /.classpath
 /.project
 /target/
+pai1Project/bin/*
+!pai1Project/bin/
+!pai1Project/bin/*
+pai1Project/hid.db

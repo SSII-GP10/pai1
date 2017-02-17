@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Timer;
 
 public class Utilities {
 	public static String getFileChecksum(String algorithm, File file) throws IOException, NoSuchAlgorithmException {
@@ -29,5 +30,27 @@ public class Utilities {
 	    }
 	    
 	   return sb.toString();
+	}
+	
+	/**
+	 * 
+	 * @param delay: time in miliseconds that will be waited until the next hashing
+	 * @return the Timer initiated;
+	 */
+	public static Timer start(long delay){
+		Timer timer =new java.util.Timer();
+		
+		timer.schedule( 
+		        new java.util.TimerTask() {
+		        	
+		            @Override
+		            public void run() {
+		                //TODO: método que calcula los hashes
+		            }
+		        }, 
+		        0,
+		        delay
+		);
+		return timer;
 	}
 }

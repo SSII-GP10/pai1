@@ -30,7 +30,7 @@ public class HashRepository {
 			String drop = "DROP TABLE IF EXISTS HASHES;";
 			st.executeUpdate(drop);
 			String query = "CREATE TABLE IF NOT EXISTS HASHES"+
-			"(ID INT PRIMARY KEY NOT NULL,"+
+			"(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"+
 			"Hash TEXT NOT NULL,"+
 			"Name TEXT NOT NULL)";
 			st.executeUpdate(query);
@@ -49,7 +49,7 @@ public class HashRepository {
 	 * @throws IllegalArgumentException
 	 */
 	public static void insertHash(Hash hash) throws IllegalArgumentException{
-		insertHash(hash.getId(), hash.getHash(), hash.getName());
+		insertHash(hash.getHash(), hash.getName());
 	}
 	/**
 	 * Insert a hash into de DB
@@ -58,7 +58,7 @@ public class HashRepository {
 	 * @param name : name in terms of path to the file of the hash
 	 * @throws IllegalArgumentException
 	 */
-	public static void insertHash(Integer id,String hash, String name) throws IllegalArgumentException{
+	public static void insertHash(String hash, String name) throws IllegalArgumentException{
 		DBConnection.checkPath();
 		Connection c = null;
 		Statement st = null;
@@ -67,9 +67,8 @@ public class HashRepository {
 				c = DriverManager.getConnection(DBConnection.PATH);
 				c.setAutoCommit(false);
 				st = c.createStatement();
-				String sql = "INSERT INTO HASHES (ID,Hash,Name)"+
-				"VALUES ("+id.toString()+",'"+hash+"','"+name+"');";
-				
+				String sql = "INSERT INTO HASHES (Hash,Name)"+
+				"VALUES ('"+hash+"','"+name+"');";
 				st.executeUpdate(sql);
 				st.close();
 				c.commit();
