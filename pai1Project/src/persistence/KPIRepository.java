@@ -30,7 +30,9 @@ public class KPIRepository {
 			c = DriverManager.getConnection(DBConnection.PATH);
 			
 			st = c.createStatement();
-			String query = "CREATE TABLE KPI"+
+			String drop = "DROP TABLE IF EXISTS KPI;";
+			st.executeUpdate(drop);
+			String query = "CREATE TABLE IF NOT EXISTS KPI"+
 			"(ID INT PRIMARY KEY NOT NULL,"+
 			"Ratio DECIMAL NOT NULL,"+
 			

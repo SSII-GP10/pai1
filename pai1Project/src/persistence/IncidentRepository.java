@@ -30,7 +30,9 @@ public class IncidentRepository {
 			c = DriverManager.getConnection(DBConnection.PATH);
 			
 			st = c.createStatement();
-			String query = "CREATE TABLE INCIDENT"+
+			String drop = "DROP TABLE IF EXISTS INCIDENT;";
+			st.executeUpdate(drop);
+			String query = "CREATE TABLE IF NOT EXISTS INCIDENT"+
 			"(ID INT PRIMARY KEY NOT NULL,"+
 			"Message TEXT NOT NULL,"+
 			"Date TEXT NOT NULL,"+

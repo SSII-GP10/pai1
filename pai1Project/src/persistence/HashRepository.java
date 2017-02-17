@@ -27,11 +27,14 @@ public class HashRepository {
 			c = DriverManager.getConnection(DBConnection.PATH);
 			
 			st = c.createStatement();
-			String query = "CREATE TABLE HASHES"+
+			String drop = "DROP TABLE IF EXISTS HASHES;";
+			st.executeUpdate(drop);
+			String query = "CREATE TABLE IF NOT EXISTS HASHES"+
 			"(ID INT PRIMARY KEY NOT NULL,"+
 			"Hash TEXT NOT NULL,"+
 			"Name TEXT NOT NULL)";
 			st.executeUpdate(query);
+
 			st.close();
 		} catch (Exception e) {
 			 System.err.println( e.getClass().getName() + ": " + e.getMessage() );
