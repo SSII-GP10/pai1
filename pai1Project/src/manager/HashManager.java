@@ -1,6 +1,7 @@
 package manager;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import domain.Hash;
 import persistence.HashRepository;
@@ -11,7 +12,7 @@ public class HashManager {
 	private HashManager(){
 	}
 	
-	private static HashManager getInstance(){
+	public static HashManager getInstance(){
 		if(instance == null){
 			instance = new HashManager();
 		}

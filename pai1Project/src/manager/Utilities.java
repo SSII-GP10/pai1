@@ -7,7 +7,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Utilities {
-	private static String getFileChecksum(String algorithm, File file) throws IOException, NoSuchAlgorithmException {
+	public static String getFileChecksum(String algorithm, File file) throws IOException, NoSuchAlgorithmException {
 		MessageDigest digest = MessageDigest.getInstance(algorithm);
 	    FileInputStream fis = new FileInputStream(file);
 	     
