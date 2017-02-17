@@ -1,25 +1,32 @@
 package manager;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Properties;
-
-import domain.Hash;
 
 public class System {
     private static System instance;
     
+    private Collection<File> files;
     private String algorithm;
     private int timeCheck;
     private File incidentFile;
     private File kpiFile;
 
+    public Collection<File> getFiles(){
+    	return files;
+    }
+    
+    public void setFiles(Collection<File> files){
+    	this.files = files;
+    }
+    
     public String getAlgorithm(){
     	return algorithm;
     }
@@ -53,7 +60,8 @@ public class System {
     }
     
     private System() throws FileNotFoundException, IOException, NullPointerException, NumberFormatException, NoSuchAlgorithmException{
-        this.readConfiguration();
+        this.files = new ArrayList<>();
+    	this.readConfiguration();
     }
     
     public static System getInstance() throws FileNotFoundException, IOException, NullPointerException, NumberFormatException, NoSuchAlgorithmException{
@@ -80,16 +88,14 @@ public class System {
             this.timeCheck = Integer.parseInt(timeCheckStr);
             this.incidentFile = new File(incidentPath);
             this.kpiFile = new File(kpiPath);
-        	calculateHashes(filesAr);
+        	addFiles(filesAr);
         }
     }
     
-    private void calculateHashes(String[] files) throws NoSuchAlgorithmException, IOException{
+    private void addFiles(String[] files){
     	for(int i=0; i<files.length; i++){
     		File file = new File(files[i]);
-    		String checkSum = Utilities.getFileChecksum(algorithm, file);
-    		Hash hash = new Hash(1, files[i], checkSum);
-    		HashManager.getInstance().addHash(hash);
+    		this.files.add(file);
     	}
     }
     
