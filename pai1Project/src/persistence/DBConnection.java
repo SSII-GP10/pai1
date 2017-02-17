@@ -16,7 +16,7 @@ public class DBConnection {
 	@SuppressWarnings("unused")
 	public static void createDB(){
 		Connection c = null;
-		String path = PATH==null?"jdbc:sqlite:test.db":PATH;
+		String path = PATH==null?"jdbc:sqlite:hid.db":PATH;
 		setPath(path);
 	    try {
 	      Class.forName("org.sqlite.JDBC");
@@ -36,7 +36,7 @@ public class DBConnection {
 	
 	
 	public static void checkPath() {
-		String path = PATH==null?"jdbc:sqlite:test.db":PATH;
+		String path = PATH==null?"jdbc:sqlite:hid.db":PATH;
 		setPath(path);
 		if(PATH == null){
 			throw new IllegalArgumentException("La base de datos no ha sido creada");
