@@ -25,10 +25,11 @@ public class Interface {
 			Core core = Core.getInstance();
 			core.readConfiguration();
 			core.addConfigurationHashes();
-			startTask(core.getTimeCheck(), TimeUnit.MINUTES, new Integrity());
-			startTask(3, TimeUnit.MINUTES, new IncidentReport());
-			startTask(2, TimeUnit.MINUTES, new KPIRecolect());
-			startTask(3, TimeUnit.MINUTES, new KPIReport());
+			ScheduledExecutorService timer = Executors.newScheduledThreadPool(4);
+			timer.scheduleAtFixedRate(new Integrity(), 0, core.getTimeCheck(), TimeUnit.MINUTES);
+			timer.scheduleAtFixedRate(new IncidentReport(), 0, 3, TimeUnit.MINUTES);
+			timer.scheduleAtFixedRate(new KPIRecolect(), 0, 2, TimeUnit.MINUTES);
+			timer.scheduleAtFixedRate(new KPIReport(), 0, 3, TimeUnit.MINUTES);
 		} catch (SQLException | FileNotFoundException
 				| NoSuchAlgorithmException | NullPointerException e) {
 			System.out.println(e.getMessage());
@@ -36,10 +37,5 @@ public class Interface {
 				    //"Error !", JOptionPane.ERROR_MESSAGE);
 			System.exit(0);
 		}
-	}
-	
-	private static void startTask(int time, TimeUnit unit, TimerTask task){
-		ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
-	    timer.scheduleAtFixedRate(task, 0, time, unit);
 	}
 }
