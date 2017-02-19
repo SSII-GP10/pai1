@@ -1,5 +1,6 @@
 package domain;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Incident {
@@ -7,40 +8,50 @@ public class Incident {
 	private Integer id;
 	private String message;
 	private Date date;
-	private Integer fileId;
+	private String file;
 	
-	
-	public Incident(Integer id, String message, Date date, Integer fileId) {
-		super();
+	public Incident(Integer id, String message, Date date, String file) {
 		this.id = id;
 		this.message = message;
 		this.date = date;
-		this.fileId = fileId;
+		this.file = file;
 	}
+	
 	public Integer getId() {
 		return id;
 	}
+	
 	public void setId(Integer id) {
 		this.id = id;
 	}
+	
 	public String getMessage() {
 		return message;
 	}
+	
 	public void setMessage(String message) {
 		this.message = message;
 	}
+	
 	public Date getDate() {
 		return date;
 	}
+	
 	public void setDate(Date date) {
 		this.date = date;
 	}
-	public Integer getFileId() {
-		return fileId;
+	
+	public String getFile() {
+		return file;
 	}
-	public void setFileId(Integer fileId) {
-		this.fileId = fileId;
+	
+	public void setFile(String file) {
+		this.file = file;
 	}
 
+	public String toString(){
+		String formatted = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+		return "File: " + file + " | Message: " + message + " | Date: " + formatted; 
+	}
 	
 }

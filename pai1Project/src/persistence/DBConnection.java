@@ -1,7 +1,5 @@
 package persistence;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
@@ -21,10 +19,9 @@ public class DBConnection {
 			PATH = "jdbc:sqlite:hid.db";
 			try {
 				Class.forName("org.sqlite.JDBC");
-				Connection c = DriverManager.getConnection(PATH);
 				HashRepository.createHashesTable();
-				//KPIRepository.createKPITable();
-				//IncidentRepository.createIncidentTable();
+				IncidentRepository.createIncidentTable();
+				KPIRepository.createKPITable();
 			} catch (ClassNotFoundException | SQLException e) {
 				throw new SQLException("Error: Cant connect to DB.");
 			}

@@ -1,0 +1,4 @@
+Ratio: 1.0 | Positives: 2 | Negatives: 0 | Report: 2017-02-19 01:34:51
+Ratio: 0.0 | Positives: 1 | Negatives: 1 | Report: 2017-02-19 01:36:28
+Ratio: 0.0 | Positives: 1 | Negatives: 1 | Report: 2017-02-19 01:36:44
+Ratio: 0.0 | Positives: 1 | Negatives: 1 | Report: 2017-02-19 01:36:50

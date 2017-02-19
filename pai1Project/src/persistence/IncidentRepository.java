@@ -28,8 +28,7 @@ public class IncidentRepository {
 			String query = "CREATE TABLE IF NOT EXISTS INCIDENT"
 					+ "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
 					+ "Message TEXT NOT NULL," + "Date TEXT NOT NULL,"
-					+ "FileId INT NOT NULL,"
-					+ "FOREIGN KEY(FileId) REFERENCES HASHES(ID)" + ")";
+					+ "File TEXT NOT NULL" + ")";
 			stm.executeUpdate(query);
 			stm.close();
 		} catch (SQLException | ClassNotFoundException e) {
@@ -39,10 +38,10 @@ public class IncidentRepository {
 
 	public static void insertIncident(Incident incident) throws SQLException {
 		insertIncident(incident.getMessage(), incident.getDate(),
-				incident.getFileId());
+				incident.getFile());
 	}
 
-	public static void insertIncident(String message, Date date, Integer fileId)
+	public static void insertIncident(String message, Date date, String file)
 			throws SQLException {
 		try {
 			DBConnection.checkPath();
@@ -52,9 +51,9 @@ public class IncidentRepository {
 			Statement stm = con.createStatement();
 			String formatted = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 					.format(date);
-			String sql = "INSERT INTO INCIDENT (Message,Date,FileId)"
+			String sql = "INSERT INTO INCIDENT (Message,Date,File)"
 					+ "VALUES ('" + message + "','" + formatted + "','"
-					+ fileId + "');";
+					+ file + "');";
 			stm.executeUpdate(sql);
 			stm.close();
 			con.commit();
@@ -75,21 +74,6 @@ public class IncidentRepository {
 		return runQuery(sql);
 	}
 
-	public static Collection<Incident> getKPIOfCurrentMonth()
-			throws SQLException {
-		Collection<Incident> result = getAllIncidents();
-		Calendar now = new GregorianCalendar();
-		now.setTime(new Date(System.currentTimeMillis()));
-		int month = now.get(Calendar.MONTH);
-		result = result.stream().filter(x -> {
-			Calendar cal = new GregorianCalendar();
-			cal.setTime(x.getDate());
-			int xmonth = cal.get(GregorianCalendar.MONTH);
-			return xmonth == month;
-		}).collect(Collectors.toList());
-		return result;
-	}
-
 	public static Collection<Incident> runQuery(String sql) throws SQLException {
 		try {
 			DBConnection.checkPath();
@@ -102,12 +86,13 @@ public class IncidentRepository {
 			while (res.next()) {
 				Integer id = res.getInt("ID");
 				String message = res.getString("Message");
-				Integer fileId = res.getInt("FileId");
+				String file = res.getString("File");
 				String a = res.getString("Date");
 				SimpleDateFormat formatted = new SimpleDateFormat(
 						"yyyy-MM-dd HH:mm:ss");
 				Date date = formatted.parse(a);
-				Incident newIncident = new Incident(id, message, date, fileId);
+				Incident newIncident = new Incident(id, message, date, file);
+				result.add(newIncident);
 			}
 			res.close();
 			stm.close();
